@@ -1,12 +1,13 @@
 package com.demo.contacts.models;
-
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
-@AllArgsConstructor
+@Builder
 public class Contact {
-    private int id;
+    private UUID id;
     private String name;
     private String email;
 }
