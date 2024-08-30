@@ -1,19 +1,21 @@
-package com.demo.contacts.services;
+package com.demo.contacts.services.contact;
 
 import com.demo.contacts.dto.ContactDTO;
 import com.demo.contacts.models.Contact;
 import com.demo.contacts.models.ResponseModel;
-import com.demo.contacts.repository.ContactRepository;
-import com.demo.contacts.repository.InMemoryContactRepository;
+import com.demo.contacts.repository.contacts.ContactRepository;
 import com.demo.contacts.uitils.ContactValidation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class InMemoryContactService implements ContactService {
-    ContactRepository repository = new InMemoryContactRepository();
+    @Qualifier("databaseContactRepository")
+    @Autowired
+    ContactRepository repository;
 
     private ResponseModel getWrongIdResponse() {
         return new ResponseModel(400, null, "The id is not correct");
@@ -24,7 +26,7 @@ public class InMemoryContactService implements ContactService {
     }
 
     public ResponseModel getContact(String id) {
-        UUID uuid = ContactValidation.isStringUUID(id);
+        Integer uuid = ContactValidation.isStringUUID(id);
         if (uuid == null) {
             return getWrongIdResponse();
         }
@@ -43,24 +45,24 @@ public class InMemoryContactService implements ContactService {
     }
 
     @Override
-    public ResponseModel createContact(ContactDTO contact) {
+    public ResponseModel createContact(ContactDTO contact, int ownerId) {
         String message = ContactValidation.contactDTOValidate(contact);
         System.out.println(message);
         if (!message.equals("success")) {
            return getWrongContactDTOResponse(message);
         }
 
-        Contact contactCreated = repository.createContact(contact);
+        Contact contactCreated = repository.createContact(contact, ownerId);
 
         if (contactCreated == null) {
-            return new ResponseModel(40, null, "Something went wrong!");
+            return new ResponseModel(400, null, "The contact exist with such name!");
         }
         return new ResponseModel(200, contactCreated, null);
     }
 
     @Override
     public ResponseModel updateContact(String id, ContactDTO contact) {
-        UUID uuid = ContactValidation.isStringUUID(id);
+        Integer uuid = ContactValidation.isStringUUID(id);
         if (uuid == null) {
             return getWrongIdResponse();
         }
@@ -81,7 +83,7 @@ public class InMemoryContactService implements ContactService {
 
     @Override
     public ResponseModel deleteContact(String id) {
-        UUID uuid = ContactValidation.isStringUUID(id);
+        Integer uuid = ContactValidation.isStringUUID(id);
         if (uuid == null) {
             return getWrongIdResponse();
         }

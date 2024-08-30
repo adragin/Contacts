@@ -2,12 +2,10 @@ package com.demo.contacts.uitils;
 
 import com.demo.contacts.dto.ContactDTO;
 
-import java.util.UUID;
-
 public class ContactValidation {
-    public static UUID isStringUUID(String id) {
+    public static Integer isStringUUID(String id) {
         try {
-            return UUID.fromString(id);
+            return Integer.parseInt(id);
         } catch (IllegalArgumentException exc) {
             return null;
         }

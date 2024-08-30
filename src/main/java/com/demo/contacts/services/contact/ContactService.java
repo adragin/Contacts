@@ -1,4 +1,4 @@
-package com.demo.contacts.services;
+package com.demo.contacts.services.contact;
 
 import com.demo.contacts.dto.ContactDTO;
 import com.demo.contacts.models.Contact;
@@ -11,7 +11,7 @@ public interface ContactService {
 
     List<Contact> getAllContacts();
 
-    ResponseModel createContact(ContactDTO contact);
+    ResponseModel createContact(ContactDTO contact, int ownerId);
 
     ResponseModel updateContact(String id, ContactDTO contact);
 
