@@ -3,7 +3,8 @@ package com.demo.contacts.controllers;
 import com.demo.contacts.dto.ContactDTO;
 import com.demo.contacts.models.Contact;
 import com.demo.contacts.models.ResponseModel;
-import com.demo.contacts.services.ContactService;
+import com.demo.contacts.services.auth.AuthService;
+import com.demo.contacts.services.contact.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class ContactController {
     @Qualifier("inMemoryContactService")
     @Autowired
     private ContactService contactService;
+
+    @Autowired
+    private AuthService authService;
 
     private ResponseEntity<ResponseModel> getResponse(int status, ResponseModel response) {
         if (response.getStatusCode() != status) {
@@ -40,8 +44,10 @@ public class ContactController {
     }
 
     @PostMapping(value = "/create")
-    public ResponseEntity<ResponseModel> createContact(@RequestBody ContactDTO contact) {
-        ResponseModel response = contactService.createContact(contact);
+    public ResponseEntity<ResponseModel> createContact(@RequestHeader("token") String token,@RequestBody ContactDTO contact) {
+
+        int ownerId = authService.getUserIdFromToken(token);
+        ResponseModel response = contactService.createContact(contact, ownerId);
         return getResponse(201, response);
     }
 

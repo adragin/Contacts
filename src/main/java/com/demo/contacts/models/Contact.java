@@ -1,18 +1,23 @@
 package com.demo.contacts.models;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.UUID;
-
-@Getter
+@Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "contacts")
+@Getter
+@Setter
 public class Contact {
-    private UUID id;
-
-    @Setter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String name;
-
-    @Setter
     private String email;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User user;
 }
