@@ -7,13 +7,13 @@ import com.demo.contacts.models.ResponseModel;
 import java.util.List;
 
 public interface ContactService {
-    ResponseModel getContact(String id);
+    ResponseModel getContact(int id);
 
-    List<Contact> getAllContacts();
+    List<Contact> getAllContacts(int ownerId);
 
     ResponseModel createContact(ContactDTO contact, int ownerId);
 
-    ResponseModel updateContact(String id, ContactDTO contact);
+    ResponseModel updateContact(int id, ContactDTO contact);
 
-    ResponseModel deleteContact(String id);
+    ResponseModel deleteContact(int id);
 }

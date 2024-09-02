@@ -31,14 +31,15 @@ public class ContactController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ResponseModel> getContactById(@PathVariable String id) {
-        ResponseModel response = contactService.getContact(id);
+        ResponseModel response = contactService.getContact(Integer.parseInt(id));
 
         return getResponse(200, response);
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<ResponseModel> getAllContacts() {
-        List<Contact> contacts = contactService.getAllContacts();
+    public ResponseEntity<ResponseModel> getAllContacts(@RequestHeader("token") String token) {
+        int ownerId = authService.getUserIdFromToken(token);
+        List<Contact> contacts = contactService.getAllContacts(ownerId);
 
         return ResponseEntity.ok(new ResponseModel(200, contacts, null));
     }
@@ -53,14 +54,14 @@ public class ContactController {
 
     @PostMapping(value = "/update/{id}")
     public ResponseEntity<ResponseModel> updateContact(@PathVariable String id, @RequestBody ContactDTO contact) {
-        ResponseModel response = contactService.updateContact(id, contact);
+        ResponseModel response = contactService.updateContact(Integer.parseInt(id), contact);
 
         return getResponse(200, response);
     }
 
     @PostMapping(value = "/delete/{id}")
     public ResponseEntity<ResponseModel> deleteContact(@PathVariable String id) {
-        ResponseModel response = contactService.deleteContact(id);
+        ResponseModel response = contactService.deleteContact(Integer.parseInt(id));
 
         return getResponse(200, response);
     }

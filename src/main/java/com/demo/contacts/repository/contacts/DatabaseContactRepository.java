@@ -33,7 +33,7 @@ public class DatabaseContactRepository implements ContactRepository {
         Contact contact;
         try {
             contact = jdbcTemplate.queryForObject(sql, contactRowMapper, id);
-        } catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             contact = null;
         }
 
@@ -41,9 +41,9 @@ public class DatabaseContactRepository implements ContactRepository {
     }
 
     @Override
-    public List<Contact> getAllContacts() {
-        String sql = "SELECT id, name, email FROM contacts ORDER BY created_at DESC";
-        return jdbcTemplate.query(sql, contactRowMapper);
+    public List<Contact> getAllContacts(int ownerId) {
+        String sql = "SELECT id, name, email FROM contacts ORDER BY created_at DESC Where owner_id = ?";
+        return jdbcTemplate.query(sql, contactRowMapper, ownerId);
     }
 
     @Override
@@ -52,17 +52,17 @@ public class DatabaseContactRepository implements ContactRepository {
         String sqlName = "SELECT id, name, email FROM contacts WHERE name = ?";
 
         try {
-           Contact oldContact = jdbcTemplate.queryForObject(sqlName, contactRowMapper,contact.getName());
+            Contact oldContact = jdbcTemplate.queryForObject(sqlName, contactRowMapper, contact.getName());
             System.out.println(oldContact);
-           if(oldContact != null) {
-               System.out.println("The contact with this name exist");
-               return null;
-           }
+            if (oldContact != null) {
+                System.out.println("The contact with this name exist");
+                return null;
+            }
         } catch (DataAccessException e) {
             System.out.println("The contact with this name not exist");
         }
 
-         jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, contact.getName());
             ps.setString(2, contact.getEmail());
@@ -70,7 +70,7 @@ public class DatabaseContactRepository implements ContactRepository {
             return ps;
         });
 
-        return jdbcTemplate.queryForObject(sqlName, contactRowMapper,contact.getName());
+        return jdbcTemplate.queryForObject(sqlName, contactRowMapper, contact.getName());
     }
 
     @Override
@@ -80,9 +80,9 @@ public class DatabaseContactRepository implements ContactRepository {
         String sqlName = "SELECT id, name, email FROM contacts WHERE name = ?";
 
         try {
-            Contact oldContact = jdbcTemplate.queryForObject(sqlName, contactRowMapper,contact.getName());
+            Contact oldContact = jdbcTemplate.queryForObject(sqlName, contactRowMapper, contact.getName());
             System.out.println(oldContact);
-            if(oldContact != null) {
+            if (oldContact != null) {
                 System.out.println("The contact with this name exist");
                 return null;
             }

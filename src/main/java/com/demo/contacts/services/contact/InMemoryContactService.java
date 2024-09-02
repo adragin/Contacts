@@ -4,18 +4,20 @@ import com.demo.contacts.dto.ContactDTO;
 import com.demo.contacts.models.Contact;
 import com.demo.contacts.models.ResponseModel;
 import com.demo.contacts.repository.contacts.ContactRepository;
+import com.demo.contacts.repository.user.UserRepositoryJPA;
 import com.demo.contacts.uitils.ContactValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class InMemoryContactService implements ContactService {
-    @Qualifier("databaseContactRepository")
     @Autowired
-    ContactRepository repository;
+    private ContactRepository repository;
+
+    @Autowired
+    private  UserRepositoryJPA userRepository;
 
     private ResponseModel getWrongIdResponse() {
         return new ResponseModel(400, null, "The id is not correct");
@@ -25,12 +27,9 @@ public class InMemoryContactService implements ContactService {
         return new ResponseModel(401, null, message);
     }
 
-    public ResponseModel getContact(String id) {
-        Integer uuid = ContactValidation.isStringUUID(id);
-        if (uuid == null) {
-            return getWrongIdResponse();
-        }
-        Contact contact = repository.getContact(uuid);
+    public ResponseModel getContact(int id) {
+
+        Contact contact = repository.getContact(id);
 
         if (contact == null) {
             return new ResponseModel(404, null, "The contact not found");
@@ -40,8 +39,8 @@ public class InMemoryContactService implements ContactService {
     }
 
     @Override
-    public List<Contact> getAllContacts() {
-        return repository.getAllContacts();
+    public List<Contact> getAllContacts(int ownerId) {
+        return repository.getAllContacts(ownerId);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class InMemoryContactService implements ContactService {
         String message = ContactValidation.contactDTOValidate(contact);
         System.out.println(message);
         if (!message.equals("success")) {
-           return getWrongContactDTOResponse(message);
+            return getWrongContactDTOResponse(message);
         }
 
         Contact contactCreated = repository.createContact(contact, ownerId);
@@ -61,34 +60,22 @@ public class InMemoryContactService implements ContactService {
     }
 
     @Override
-    public ResponseModel updateContact(String id, ContactDTO contact) {
-        Integer uuid = ContactValidation.isStringUUID(id);
-        if (uuid == null) {
-            return getWrongIdResponse();
-        }
-
-        String message = ContactValidation.contactDTOValidate(contact);
-        if (!message.equals("success")) {
-            return getWrongContactDTOResponse(message);
-        }
-
-        Contact contactUpdated = repository.updateContact(uuid, contact);
-
-        if (contactUpdated == null) {
+    public ResponseModel updateContact(int id, ContactDTO contact) {
+        Contact oldContact = repository.getContact(id);
+        if (oldContact == null) {
             return new ResponseModel(404, null, "The contact not found");
         }
+
+        Contact contactUpdated = repository.updateContact(id, contact);
 
         return new ResponseModel(200, contactUpdated, null);
     }
 
     @Override
-    public ResponseModel deleteContact(String id) {
-        Integer uuid = ContactValidation.isStringUUID(id);
-        if (uuid == null) {
-            return getWrongIdResponse();
-        }
+    public ResponseModel deleteContact(int id) {
 
-        boolean isDeleted = repository.deleteContact(uuid);
+
+        boolean isDeleted = repository.deleteContact(id);
 
         if (isDeleted) {
             return new ResponseModel(200, null, "success");

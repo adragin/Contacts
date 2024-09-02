@@ -5,10 +5,10 @@ import com.demo.contacts.models.Contact;
 
 import java.util.List;
 
-public interface ContactRepository {
+public interface ContactRepository  {
     Contact getContact(int id);
 
-    List<Contact> getAllContacts();
+    List<Contact> getAllContacts(int ownerId);
 
     Contact createContact(ContactDTO contact, int ownerId);
 
