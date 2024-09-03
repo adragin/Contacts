@@ -4,7 +4,6 @@ import com.demo.contacts.dto.ContactDTO;
 import com.demo.contacts.models.Contact;
 import com.demo.contacts.models.ResponseModel;
 import com.demo.contacts.repository.contacts.ContactRepository;
-import com.demo.contacts.repository.user.UserRepositoryJPA;
 import com.demo.contacts.uitils.ContactValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,12 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class InMemoryContactService implements ContactService {
+public class ContactServiceImpl implements ContactService {
     @Autowired
     private ContactRepository repository;
-
-    @Autowired
-    private  UserRepositoryJPA userRepository;
 
     private ResponseModel getWrongIdResponse() {
         return new ResponseModel(400, null, "The id is not correct");

@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/contact")
 public class ContactController {
-    @Qualifier("inMemoryContactService")
+    @Qualifier("contactServiceImpl")
     @Autowired
     private ContactService contactService;
 

@@ -2,6 +2,7 @@ package com.demo.contacts.repository.contacts;
 
 import com.demo.contacts.dto.ContactDTO;
 import com.demo.contacts.models.Contact;
+import com.demo.contacts.models.Phone;
 import com.demo.contacts.models.User;
 import com.demo.contacts.repository.user.UserRepositoryJPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class ContactAdapterRepository implements ContactRepository {
     private JPAContactRepository jpa;
     @Autowired
     private UserRepositoryJPA userJpa;
+    @Autowired
+    private JPAPhoneRepository phoneRepository;
 
     @Override
     public Contact getContact(int id) {
@@ -33,6 +36,17 @@ public class ContactAdapterRepository implements ContactRepository {
         Contact newContact = new Contact();
         newContact.setEmail(contact.getEmail());
         newContact.setName(contact.getName());
+
+        contact.getPhones().forEach((p) -> {
+            if (phoneRepository.findByPhoneNumber(p) == null) {
+                Phone ph = new Phone();
+                ph.setPhoneNumber(p);
+                ph.setContact(newContact);
+                phoneRepository.save(ph);
+            }
+        });
+
+
         User user = userJpa.findById(ownerId).orElseGet(null);
         newContact.setUser(user);
         return jpa.save(newContact);
@@ -45,6 +59,15 @@ public class ContactAdapterRepository implements ContactRepository {
         contactDB.setName(contact.getName());
         contactDB.setEmail(contact.getEmail());
 
+        contact.getPhones().forEach((p) -> {
+            if (phoneRepository.findByContactIdAndPhoneNumber(id, p) == null) {
+                Phone ph = new Phone();
+                ph.setPhoneNumber(p);
+                ph.setContact(contactDB);
+                phoneRepository.save(ph);
+            }
+        });
+
         return jpa.save(contactDB);
     }
 
@@ -53,6 +76,4 @@ public class ContactAdapterRepository implements ContactRepository {
         jpa.deleteById(id);
         return true;
     }
-
-
 }

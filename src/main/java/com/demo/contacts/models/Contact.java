@@ -3,6 +3,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Builder
 @NoArgsConstructor
@@ -16,6 +18,8 @@ public class Contact {
     private int id;
     private String name;
     private String email;
+    @OneToMany(mappedBy = "contact")
+    private List<Phone> phones;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "owner_id")
